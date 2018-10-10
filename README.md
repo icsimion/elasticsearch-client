@@ -1,15 +1,15 @@
-# _Scala-Spark-Gradle Template project_
+# _ElasticSearch client project_
 A barebones project with scala, apache spark built using gradle. Spark-shell provides `spark` and `sc` variables pre-initialised, here I did the same using a *scala trait* that you can extend.
 
 ## Prerequisites
 - [Java](https://java.com/en/download/)
 - [Gradle](https://gradle.org/)
-- [Scala](https://www.scala-lang.org/)
+- [Java]
 
 ## Build and Demo process
 
 ### Clone the Repo
-`git clone https://github.com/isimion/scala-spark-gradle-empty.git`
+`git clone https://github.com/isimion/elasticsearch-client.git`
 
 ### Build
 `./gradlew clean build`
@@ -20,7 +20,7 @@ A barebones project with scala, apache spark built using gradle. Spark-shell pro
 
 
 ## What the demo does?
-Take a look at *src->main->scala->template->spark* directory
+Take a look at *src->main->java->com->sim* directory
 
 We have two Items here. 
 
