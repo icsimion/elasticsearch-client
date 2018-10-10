@@ -4,8 +4,9 @@ import com.sim.request.index.IndexReqBuilder;
 import com.sim.request.index.IndexReqType;
 import org.apache.commons.io.FileUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -18,8 +19,8 @@ import java.util.logging.Logger;
 /**
  * Created by iliesimion.
  */
-public class IngestService {
-    private static final Logger LOG = Logger.getLogger(IngestService.class.getName());
+public class IngestBulkService {
+    private static final Logger LOG = Logger.getLogger(IngestBulkService.class.getName());
     private String FILE_LOCATION = "src/main/resources/movies/";
 
     private RestHighLevelClient client;
@@ -32,6 +33,8 @@ public class IngestService {
         try {
             List<String> lines = FileUtils.readLines(new File(FILE_LOCATION + sourceFile));
 
+            BulkRequest bulkRequest = new BulkRequest();
+
             // Iterate the result to process each line of the file.
             lines.stream().skip(1).forEach(line -> {
                 IndexRequest request = new IndexReqBuilder()
@@ -40,20 +43,16 @@ public class IngestService {
                         .withReqType(reqType)
                         .withSource(line)
                         .build();
-                try {
-                    IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
-                    System.out.println(indexResponse);
-                } catch (IOException e) {
-                    LOG.log(Level.WARNING, e.getMessage());
-                }
-
+                bulkRequest.add(request);
             });
+
+            BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+            System.out.println(bulkResponse);
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage());
         }
 
         return client;
-
     }
 
     public void setClient(RestHighLevelClient client) {

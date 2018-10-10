@@ -9,21 +9,16 @@ import java.util.Map;
  */
 public abstract class IndexReq {
     private String id;
-    private Map<String, String> source;
+    private Map<String, Object> source;
     private String[] fields;
 
-    public void populateSource(final String source) {
-        DocSourceGenerator docSourceGenerator = new DocSourceGenerator(fields);
-        Map jsonSource = docSourceGenerator.createJSONSource(source);
-        this.source = jsonSource;
-        this.id = (String) jsonSource.get("id");
-    }
+    public abstract void populateSource(final String source);
 
     public String getId() {
         return id;
     }
 
-    public Map<String, String> getSource() {
+    public Map<String, Object> getSource() {
         return source;
     }
 
@@ -31,4 +26,17 @@ public abstract class IndexReq {
     public void setFields(String[] fields) {
         this.fields = fields;
     }
+
+    public String[] getFields() {
+        return fields;
+    }
+
+    public void setSource(Map<String, Object> source) {
+        this.source = source;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }

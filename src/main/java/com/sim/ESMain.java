@@ -1,10 +1,15 @@
 package com.sim;
 
+import com.sim.ingest.IngestBulkService;
 import com.sim.ingest.IngestService;
 import com.sim.request.index.IndexReqType;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
 
@@ -13,15 +18,23 @@ import java.io.IOException;
  */
 public class ESMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         RestHighLevelClient client = createClient();
+        CreateIndexResponse index = createIndex(client, "movies");
 
-        IngestService ingestService = new IngestService();
-        ingestService.setClient(client);
-        ingestService.setIndex("movies_small");
-        ingestService.setMappingType("doc");
+        // ingest individual rows
+//        IngestService ingestService = new IngestService();
+//        ingestService.setClient(client);
+//        ingestService.setIndex(index);
+//        ingestService.setMappingType("doc");
+//        client = ingestService.ingest("movies_small.csv", IndexReqType.MOVIES);
 
-        client = ingestService.ingest("movies_small.csv", IndexReqType.MOVIES);
+        // ingest bulk - movies
+        IngestBulkService ingestBulkService = new IngestBulkService();
+        ingestBulkService.setClient(client);
+        ingestBulkService.setIndex(index);
+        ingestBulkService.setMappingType("doc");
+        client = ingestBulkService.ingest("movies.csv", IndexReqType.MOVIES);
 
         try {
             client.close();
@@ -39,6 +52,17 @@ public class ESMain {
         );
 
         return client;
+    }
+
+    private static CreateIndexResponse createIndex(final RestHighLevelClient client, final String index) throws IOException {
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest();
+        createIndexRequest.settings(Settings.builder()
+                .put("index.number_of_shards", 3)
+                .put("index.number_of_replicas", 2)
+        );
+        createIndexRequest.index(index);
+        return client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+
     }
 
 }
