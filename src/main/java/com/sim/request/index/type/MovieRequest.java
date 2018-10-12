@@ -6,7 +6,7 @@ import org.elasticsearch.common.collect.Tuple;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sim.request.DocSourceGenerator.*;
+import static com.sim.request.DocSourceUtils.*;
 
 /**
  * Created by iliesimion.

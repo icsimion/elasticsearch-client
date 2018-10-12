@@ -1,17 +1,13 @@
 package com.sim;
 
-import com.sim.ingest.IngestBulkService;
-import com.sim.ingest.IngestService;
 import com.sim.request.index.IndexReqType;
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.settings.Settings;
+import com.sim.request.search.SearchType;
+import com.sim.service.ESService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created by iliesimion.
@@ -19,50 +15,43 @@ import java.io.IOException;
 public class ESMain {
 
     public static void main(String[] args) throws IOException {
-        RestHighLevelClient client = createClient();
-        CreateIndexResponse index = createIndex(client, "movies");
+        // service for ingest
+        ESService esService = new ESService();
+        esService.createClient();
+        esService.setType(IndexReqType.MOVIES);
 
         // ingest individual rows
-//        IngestService ingestService = new IngestService();
-//        ingestService.setClient(client);
-//        ingestService.setIndex(index);
-//        ingestService.setMappingType("doc");
-//        client = ingestService.ingest("movies_small.csv", IndexReqType.MOVIES);
+//        esService.createIndex("movies_small");
+//        Consumer<String> consumerInd = (filename) -> esService.ingestIndividual(filename);
+//        esService.runAndCloseClient(consumerInd, "movies_small.csv");
 
         // ingest bulk - movies
-        IngestBulkService ingestBulkService = new IngestBulkService();
-        ingestBulkService.setClient(client);
-        ingestBulkService.setIndex(index);
-        ingestBulkService.setMappingType("doc");
-        client = ingestBulkService.ingest("movies.csv", IndexReqType.MOVIES);
+//        esService.createIndex("movies");
+//        Consumer<String> consumerBulk = (filename) -> esService.ingestBulk(filename);
+//        esService.runAndCloseClient(consumerBulk, "movies.csv");
 
-        try {
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // search
+        System.out.println("--------------Simple search---------------");
+//        Map<String, String> paramsSimple = new HashMap<>();
+//        paramsSimple.put("index", "movies");
+//        paramsSimple.put("field", "title");
+//        paramsSimple.put("term", "star");
+//
+//        esService.setSearchType(SearchType.SIMPLE);
+//        Consumer<Map<String, String>> consumerSimple = (params) -> esService.search(params);
+//        esService.runAndCloseClient(consumerSimple, paramsSimple);
 
-    }
+        System.out.println("--------------Fuzzy search---------------");
+        Map<String, String> paramsFuzzy = new HashMap<>();
+        paramsFuzzy.put("index", "movies");
+        paramsFuzzy.put("field", "title");
+        paramsFuzzy.put("term", "stra");
+        paramsFuzzy.put("prefixLength", "1");
+        paramsFuzzy.put("maxExpansions", "3");
 
-    private static RestHighLevelClient createClient() {
-        RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost("localhost", 9200, "http")
-                )
-        );
-
-        return client;
-    }
-
-    private static CreateIndexResponse createIndex(final RestHighLevelClient client, final String index) throws IOException {
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest();
-        createIndexRequest.settings(Settings.builder()
-                .put("index.number_of_shards", 3)
-                .put("index.number_of_replicas", 2)
-        );
-        createIndexRequest.index(index);
-        return client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
-
+        esService.setSearchType(SearchType.FUZZY);
+        Consumer<Map<String, String>> consumerFuzzy = (params) -> esService.search(params);
+        esService.runAndCloseClient(consumerFuzzy, paramsFuzzy);
     }
 
 }

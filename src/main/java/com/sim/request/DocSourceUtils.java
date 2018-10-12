@@ -5,7 +5,7 @@ import org.elasticsearch.common.collect.Tuple;
 /**
  * Created by iliesimion
  */
-public class DocSourceGenerator {
+public class DocSourceUtils {
     public static final String CSV_SPLIT_CHAR = ",";
     public static final Character CSV_QUOTE_CHAR = '\"';
     public static final String CSV_ARRAY_SEP_CHAR = "\\|";

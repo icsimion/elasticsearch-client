@@ -1,11 +1,9 @@
 package com.sim.request.index;
 
-import com.sim.request.DocSourceGenerator;
-
 import java.util.Map;
 
 /**
- * Created by iliesimion on 10/9/2018.
+ * Created by iliesimion.
  */
 public abstract class IndexReq {
     private String id;
