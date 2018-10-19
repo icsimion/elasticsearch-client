@@ -46,7 +46,6 @@ public class IngestService {
                 } catch (IOException e) {
                     LOG.log(Level.WARNING, e.getMessage());
                 }
-
             });
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage());

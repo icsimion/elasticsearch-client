@@ -1,6 +1,7 @@
 package com.sim.request.index;
 
 import com.sim.request.index.type.MovieRequest;
+import com.sim.request.index.type.RatingRequest;
 
 /**
  * Created by iliesimion.
@@ -11,6 +12,9 @@ public abstract class IndexReqFactory {
         switch (type) {
             case MOVIES:
                 indexRequest = new MovieRequest();
+                break;
+            case RATINGS:
+                indexRequest = new RatingRequest();
                 break;
             default:
                 break;

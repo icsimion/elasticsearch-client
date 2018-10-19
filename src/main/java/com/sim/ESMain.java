@@ -31,7 +31,7 @@ public class ESMain {
 //        esService.runAndCloseClient(consumerBulk, "movies.csv");
 
         // search
-        System.out.println("--------------Simple search---------------");
+//        System.out.println("--------------Simple search---------------");
 //        Map<String, String> paramsSimple = new HashMap<>();
 //        paramsSimple.put("index", "movies");
 //        paramsSimple.put("field", "title");
@@ -41,17 +41,29 @@ public class ESMain {
 //        Consumer<Map<String, String>> consumerSimple = (params) -> esService.search(params);
 //        esService.runAndCloseClient(consumerSimple, paramsSimple);
 
-        System.out.println("--------------Fuzzy search---------------");
-        Map<String, String> paramsFuzzy = new HashMap<>();
-        paramsFuzzy.put("index", "movies");
-        paramsFuzzy.put("field", "title");
-        paramsFuzzy.put("term", "stra");
-        paramsFuzzy.put("prefixLength", "1");
-        paramsFuzzy.put("maxExpansions", "3");
+//        System.out.println("--------------Fuzzy search---------------");
+//        Map<String, String> paramsFuzzy = new HashMap<>();
+//        paramsFuzzy.put("index", "movies");
+//        paramsFuzzy.put("field", "title");
+//        paramsFuzzy.put("term", "stra");
+//        paramsFuzzy.put("prefixLength", "1");
+//        paramsFuzzy.put("maxExpansions", "3");
 
-        esService.setSearchType(SearchType.FUZZY);
+//        System.out.println("--------------Bool search---------------");
+//        Map<String, String> paramsBool = new HashMap<>();
+//        paramsBool.put("index", "movies");
+//        paramsBool.put("field", "title");
+//        paramsBool.put("term", "trip");
+//
+        System.out.println("--------------Aggregation---------------");
+        Map<String, String> paramsBool = new HashMap<>();
+        paramsBool.put("index", "ratings");
+        paramsBool.put("field", "title");
+        paramsBool.put("term", "trip");
+
+        esService.setSearchType(SearchType.AGGREGATION);
         Consumer<Map<String, String>> consumerFuzzy = (params) -> esService.search(params);
-        esService.runAndCloseClient(consumerFuzzy, paramsFuzzy);
+        esService.runAndCloseClient(consumerFuzzy, paramsBool);
     }
 
 }

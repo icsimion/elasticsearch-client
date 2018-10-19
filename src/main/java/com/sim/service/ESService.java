@@ -32,7 +32,7 @@ public class ESService {
         try {
             client.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            //TODO logger
         }
 
 
