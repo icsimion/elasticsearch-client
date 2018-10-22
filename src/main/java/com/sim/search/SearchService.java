@@ -9,9 +9,9 @@ import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
@@ -122,15 +122,13 @@ public class SearchService {
         return searchRequest;
     }
 
-//    TODO https://www.elastic.co/guide/en/elasticsearch/reference/6.4/query-dsl-multi-match-query.html
-
     private SearchRequest createAggregationSearchRequest(final Map<String, String> searchParams) {
         String index = searchParams.get("index");
-        String field = searchParams.get("field");
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
-                .size(50); //default is 10
+                .size(500);
 
+        // results for user 1
         sourceBuilder.query(QueryBuilders.matchQuery("userId", "1"));
 
         // Add aggregations
@@ -138,7 +136,7 @@ public class SearchService {
                 AggregationBuilders
                         .terms("rating")
                         .field("rating")
-                        //.order(Terms.Order.aggregation("customer_id", "contract_sum", false))
+                        .order(BucketOrder.key(false)) //order by key, desc
                         .subAggregation(
                                 AggregationBuilders.avg("avg_rating")
                                         .field("rating")
@@ -153,14 +151,11 @@ public class SearchService {
         return searchRequest;
     }
 
-    public SearchResponse searchAndPrintResults(final SearchRequest searchRequest) {
+    public SearchResponse search(final SearchRequest searchRequest) {
         SearchResponse searchResponse = null;
         try {
             searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             System.out.println("Number of results: " + searchResponse.getHits().getHits().length);
-            for (SearchHit hit : searchResponse.getHits().getHits()) {
-                System.out.println("Score: " + hit.getScore() + "; Source: " + hit.getSourceAsString());
-            }
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage());
         }
